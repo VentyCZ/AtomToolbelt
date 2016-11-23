@@ -28,7 +28,13 @@ namespace SpawnPoint.Threading
         {
             var item = new WorkItem(name, work);
             workItems.Enqueue(item);
-            startSignal.Set();
+
+            if (workItems.Count == 1)
+            {
+                //We got an item, lets work
+                startSignal.Set();
+            }
+
             return item;
         }
 
@@ -53,9 +59,7 @@ namespace SpawnPoint.Threading
             {
                 do
                 {
-                    Console.WriteLine("DOing");
                     Work();
-                    Console.WriteLine("RESET");
                 } while (true);
             })).Start();
         }
@@ -65,9 +69,11 @@ namespace SpawnPoint.Threading
             if (workItems.Count == 0)
             {
                 //Wait for signal
-                Console.WriteLine("Waiting for signal (no work items)...");
-                startSignal.WaitOne();
-                Console.WriteLine("Got the signal! Getting to work!");
+                //... Just to be sure!
+                while (workItems.Count == 0)
+                {
+                    startSignal.WaitOne();
+                }
             }
 
             while (workItems.Count > 0)
@@ -76,14 +82,12 @@ namespace SpawnPoint.Threading
                 var item = workItems.Dequeue();
 
                 //Inform about the work
-                Console.WriteLine("Working on '{0}'...", item.Name);
                 WorkItemStarted?.Invoke(this, item);
 
                 //Start the work
                 item.Work.Invoke();
 
                 //Inform about job being done
-                Console.WriteLine("Done working on '{0}'!", item.Name);
                 WorkItemCompleted?.Invoke(this, item);
             }
 
