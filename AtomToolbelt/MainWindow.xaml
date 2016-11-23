@@ -1,0 +1,22 @@
+﻿<local:TabWindow x:Class="AtomToolbelt.MainWindow" x:Name="wnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:AtomToolbelt"
+        xmlns:components="clr-namespace:AtomToolbelt.Components"
+        xmlns:views="clr-namespace:AtomToolbelt.Views"
+        Title="AtomToolbelt" Height="350" Width="500" Icon="Icon.ico" Foreground="White" Background="Black" FontFamily="Segoe UI" ResizeMode="CanMinimize" WindowStyle="None">
+    <Grid Background="#FF252526" Margin="1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <components:HeaderBar x:Name="Header" Grid.Row="0"></components:HeaderBar>
+        <Grid Grid.Row="1" Background="#FF252526">
+            <views:Menu x:Name="Page_Menu" Visibility="Visible"/>
+            <views:FixRegistry x:Name="Page_FixRegistry" Visibility="Hidden"/>
+            <views:About x:Name="Page_About" Visibility="Hidden"/>
+        </Grid>
+    </Grid>
+</local:TabWindow>
