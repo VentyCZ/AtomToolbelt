@@ -1,12 +1,14 @@
 ﻿using System;
 using SpawnPoint.UI;
 using SpawnPoint.Threading;
+using AtomToolbelt.Utils;
 
 namespace AtomToolbelt.Pages
 {
     class Page_FixRegistry : PageCollection.Page
     {
         Views.FixRegistry view;
+        AtomRegistry atom = new AtomRegistry();
 
         bool isWorking = false;
         Worker w;
@@ -30,31 +32,37 @@ namespace AtomToolbelt.Pages
                 //Start
                 isWorking = true;
                 w = new Worker();
-                w.WorkItemCompleted += W_WorkItemCompleted;
                 w.WorkItemStarted += WorkBlockStart;
                 w.WorkCompleted += AllDone;
 
-                w.AddItem("Work1", () =>
-                {
-                    Console.WriteLine("Work1 reporting!");
-                });
-
-                w.AddItem("Work2", () =>
-                {
-                    Console.WriteLine("Work2 reporting!");
-                });
+                w.AddItem("Discovery", Work_Discorver);
                 w.Start();
             }
+        }
+
+        private void Work_Discorver(Worker worker)
+        {
+            var result = atom.DiscoverAtomVersions();
+
+            if (result == AtomRegistry.DiscoveryResult.Success)
+            {
+                worker.AddItem("Edit", Work_Edit);
+            }
+            else
+            {
+                view.SetStatus("Failure: " + result.ToString());
+                w.Exit();
+            }
+        }
+
+        private void Work_Edit(Worker worker)
+        {
+            view.SetStatus("Using version: " + atom.LatestVersion);
         }
 
         protected override void OnDeactivation()
         {
             w.Exit();
-        }
-
-        private void W_WorkItemCompleted(Worker sender, Worker.WorkItem item)
-        {
-            view.SetStatus(string.Format("DONE! - {0}", item.Name));
         }
 
         private void WorkBlockStart(Worker sender, Worker.WorkItem item)
@@ -65,8 +73,7 @@ namespace AtomToolbelt.Pages
         private void AllDone(Worker sender)
         {
             isWorking = false;
-            Console.WriteLine("We're done!");
-            view.SetStatus("All done!");
+            //view.SetStatus("All done!");
 
             MyApp.Header.ToggleBackButton(true);
         }

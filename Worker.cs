@@ -9,6 +9,7 @@ namespace SpawnPoint.Threading
         private Thread wok;
         private AutoResetEvent startSignal = new AutoResetEvent(false);
         private Queue<WorkItem> workItems = new Queue<WorkItem>();
+        private Dictionary<string, object> accomplishments = new Dictionary<string, object>();
 
         public event WorkItemStartedEventArgs WorkItemStarted;
         public delegate void WorkItemStartedEventArgs(Worker sender, WorkItem item);
@@ -24,7 +25,17 @@ namespace SpawnPoint.Threading
             re_start();
         }
 
-        public WorkItem AddItem(string name, Action work)
+        public void Set(string name, object value)
+        {
+            accomplishments[name] = value;
+        }
+
+        public object Get(string name, object defaultValue = null)
+        {
+            return (accomplishments.ContainsKey(name) ? accomplishments[name] : defaultValue);
+        }
+
+        public WorkItem AddItem(string name, Action<Worker> work)
         {
             var item = new WorkItem(name, work);
             workItems.Enqueue(item);
@@ -85,7 +96,7 @@ namespace SpawnPoint.Threading
                 WorkItemStarted?.Invoke(this, item);
 
                 //Start the work
-                item.Work.Invoke();
+                item.Work.Invoke(this);
 
                 //Inform about job being done
                 WorkItemCompleted?.Invoke(this, item);
@@ -98,9 +109,9 @@ namespace SpawnPoint.Threading
         public class WorkItem
         {
             public string Name { get; private set; }
-            public Action Work { get; private set; }
+            public Action<Worker> Work { get; private set; }
 
-            public WorkItem(string name, Action work)
+            public WorkItem(string name, Action<Worker> work)
             {
                 Name = name;
                 Work = work;

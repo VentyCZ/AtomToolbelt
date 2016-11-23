@@ -10,7 +10,20 @@ namespace AtomToolbelt
     {
         public static string AppendPath(this string parent, string appended)
         {
-            return parent.TrimEnd('/') + "/" + appended.TrimStart('/');
+            return parent.Trim().TrimEnd('/').Trim() + "/" + appended.Trim().TrimStart('/').Trim();
+        }
+
+        public static bool ContainsFile(this DirectoryInfo dir, string filename)
+        {
+            return File.Exists(AppendPath(dir.FullName, filename));
+        }
+
+        public static Version Versionate(this string ver)
+        {
+            Version verMe = null;
+            Version.TryParse(ver, out verMe);
+
+            return verMe;
         }
 
         public static string smallVersion(this Version ver, int minimum = 2)
@@ -26,7 +39,7 @@ namespace AtomToolbelt
                     continue;
 
                 foundFirstReal = true;
-                
+
                 retVer.Add(parts[x]);
             }
 

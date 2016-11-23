@@ -7,8 +7,7 @@
              mc:Ignorable="d" d:DesignHeight="311" d:DesignWidth="498">
     <Grid>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <ProgressBar Name="Progress" Height="10" Width="300" IsIndeterminate="True"/>
-            <TextBlock Name="Status" TextAlignment="Center" Foreground="White" FontStyle="Italic" FontSize="20" Margin="0 20 0 0" Text="Status text here..." />
+            <TextBlock Name="Status" TextAlignment="Center" Foreground="White" FontStyle="Italic" FontSize="20" Text="Status text here..." />
         </StackPanel>
     </Grid>
 </UserControl>
