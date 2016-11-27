@@ -35,12 +35,12 @@ namespace AtomToolbelt.Pages
                 w.WorkItemStarted += WorkBlockStart;
                 w.WorkCompleted += AllDone;
 
-                w.AddItem("Discovery", Work_Discorver);
+                w.AddItem("Discovery", Work_Discover);
                 w.Start();
             }
         }
 
-        private void Work_Discorver(Worker worker)
+        private void Work_Discover(Worker worker)
         {
             var result = atom.DiscoverAtomVersions();
 
@@ -58,6 +58,20 @@ namespace AtomToolbelt.Pages
         private void Work_Edit(Worker worker)
         {
             view.SetStatus("Using version: " + atom.LatestVersion);
+
+            var res_app = atom.SetApplicationCommand(atom.LatestVersionFolder);
+            var res_shell = atom.SetShellCommand(atom.LatestVersionFolder);
+            var res_dir = atom.SetDirectoryCommand(atom.LatestVersionFolder);
+            var res_dirbg = atom.SetDirectoryBackgroundCommand(atom.LatestVersionFolder);
+
+            if (res_app && res_shell && res_dir && res_dirbg)
+            {
+                view.SetStatus("Successfully fixed all issues, if any existed!");
+            }
+            else
+            {
+                view.SetStatus("Failed to edit registry key(s), permission issue ?");
+            }
         }
 
         protected override void OnDeactivation()

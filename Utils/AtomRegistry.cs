@@ -89,18 +89,88 @@ namespace AtomToolbelt.Utils
             }
         }
 
-        //public bool SetShellCommand(string version)
-        //{
-        //    var x = Registry.CurrentUser.OpenSubKey(@"Software\Classes\*\shell\Atom", true);
-        //    if (x != null)
-        //    {
-                
-        //    }
+        private string getIconFormat(DirectoryInfo versionPath)
+        {
+            return string.Format("\"{0}\"", string.Join(Path.DirectorySeparatorChar.ToString(), new string[] { versionPath.FullName, "atom.exe" }));
+        }
 
-        //    return false;
+        private string getCommandFormat(DirectoryInfo versionPath)
+        {
+            return string.Format("{0} \"%1\"", getIconFormat(versionPath));
+        }
 
-        //    //x.SetValue(null, version);
-        //}
+        private bool setCommandAndIcon(string keyPath, DirectoryInfo versionPath)
+        {
+            if (keyPath == null || versionPath == null)
+                return false;
+
+            try
+            {
+                using (var x = Registry.CurrentUser.CreateSubKey(keyPath))
+                {
+                    if (x == null)
+                        return false;
+
+                    using (var y = x.CreateSubKey("command"))
+                    {
+                        if (y == null)
+                            return false;
+
+                        x.SetValue("Icon", getIconFormat(versionPath));
+                        y.SetValue(null, getCommandFormat(versionPath));
+                    }
+
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private bool setCommandOnly(string commandKeyPath, DirectoryInfo versionPath)
+        {
+            if (commandKeyPath == null || versionPath == null)
+                return false;
+
+            try
+            {
+                using (var x = Registry.CurrentUser.CreateSubKey(commandKeyPath))
+                {
+                    if (x == null)
+                        return false;
+
+                    x.SetValue(null, getCommandFormat(versionPath));
+                }
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool SetApplicationCommand(DirectoryInfo versionPath)
+        {
+            return setCommandOnly(@"Software\Classes\Applications\atom.exe\shell\open\command", versionPath);
+        }
+
+        public bool SetShellCommand(DirectoryInfo versionPath)
+        {
+            return setCommandAndIcon(@"Software\Classes\*\shell\Atom", versionPath);
+        }
+
+        public bool SetDirectoryBackgroundCommand(DirectoryInfo versionPath)
+        {
+            return setCommandAndIcon(@"Software\Classes\Directory\Background\shell\Atom", versionPath);
+        }
+
+        public bool SetDirectoryCommand(DirectoryInfo versionPath)
+        {
+            return setCommandAndIcon(@"Software\Classes\Directory\shell\Atom", versionPath);
+        }
 
         //private Regex r_location = new Regex("\"(\\S+)\"", RegexOptions.Compiled);
         //public string GetAtomLocation()
