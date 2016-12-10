@@ -62,6 +62,7 @@
     <Compile Include="MyApp.cs" />
     <Compile Include="PageCollection.cs" />
     <Compile Include="TabWindow.cs" />
+    <Compile Include="Utils\AtomManager.cs" />
     <Compile Include="Utils\AtomRegistry.cs" />
     <Compile Include="Views\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>

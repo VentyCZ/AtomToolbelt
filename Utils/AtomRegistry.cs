@@ -24,7 +24,7 @@ namespace AtomToolbelt.Utils
 
         public AtomRegistry()
         {
-            baseLocation = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + Path.DirectorySeparatorChar + "atom");
+            baseLocation = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "atom"));
         }
 
         public void SetBaseLocation(string baseLocation)
